@@ -46,7 +46,9 @@
       "!**/tsconfig.tsbuildinfo",
       "!**/pnpm-lock.yaml",
       "!**/apps/web/src/components/ui",
-      "!**/*.svg"
+      "!**/*.svg",
+      "!**/build",
+      "!**/.docusaurus"
     ]
   }
 }
