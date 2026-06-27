@@ -8,7 +8,7 @@ import { useGameStore } from '@/store/useGameStore';
 import { usePeerStore } from '@/store/usePeerStore';
 
 export function TeamsPage() {
-  const { updatePlayer, startGame, leaveRoom } = useNetwork();
+  const { updatePlayer, startGame, leaveRoom, kickPlayer } = useNetwork();
   const { gameState, localPlayer, roomCode } = useGameStore();
 
   if (!gameState || !localPlayer) return null;
@@ -144,7 +144,11 @@ export function TeamsPage() {
                 <CardTitle className="text-lg font-bold">Composição das Equipes</CardTitle>
               </CardHeader>
               <CardContent>
-                <PlayerList players={gameState.players} localPlayerId={localPlayer.id} />
+                <PlayerList
+                  players={gameState.players}
+                  localPlayerId={localPlayer.id}
+                  onKick={kickPlayer}
+                />
               </CardContent>
             </Card>
           </div>

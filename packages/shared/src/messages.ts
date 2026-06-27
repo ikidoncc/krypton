@@ -129,6 +129,17 @@ export interface GameOverMessage {
   from: string;
 }
 
+/**
+ * Sent by the host to a client to inform them they have been kicked.
+ */
+export interface KickedMessage {
+  type: 'KICKED';
+  payload: {
+    reason: string;
+  };
+  from: string;
+}
+
 // ── Discriminated union of ALL messages ───────────────────────
 
 export type Message =
@@ -141,7 +152,8 @@ export type Message =
   | RevealCardMessage
   | NextTurnMessage
   | SyncStateMessage
-  | GameOverMessage;
+  | GameOverMessage
+  | KickedMessage;
 
 /** Infer the payload type for a specific message type. */
 export type MessagePayload<T extends Message['type']> = Extract<Message, { type: T }>['payload'];
@@ -183,4 +195,5 @@ export const MESSAGE_TYPES = [
   'NEXT_TURN',
   'SYNC_STATE',
   'GAME_OVER',
+  'KICKED',
 ] as const satisfies MessageType[];

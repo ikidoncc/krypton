@@ -8,7 +8,7 @@ import { useNetwork } from '@/hooks/useNetwork';
 import { useGameStore } from '@/store/useGameStore';
 
 export function GamePage() {
-  const { giveClue, revealCard, endTurn, leaveRoom } = useNetwork();
+  const { giveClue, revealCard, endTurn, leaveRoom, kickPlayer } = useNetwork();
   const { gameState, localPlayer, roomCode } = useGameStore();
 
   if (!gameState || !localPlayer) return null;
@@ -122,7 +122,11 @@ export function GamePage() {
               <CardTitle className="text-base font-bold">Jogadores na Sala</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
-              <PlayerList players={gameState.players} localPlayerId={localPlayer.id} />
+              <PlayerList
+                players={gameState.players}
+                localPlayerId={localPlayer.id}
+                onKick={kickPlayer}
+              />
             </CardContent>
           </Card>
         </aside>

@@ -8,7 +8,7 @@ import { useGameStore } from '@/store/useGameStore';
 import { usePeerStore } from '@/store/usePeerStore';
 
 export function LobbyPage() {
-  const { createRoom, joinRoom, error: networkError, leaveRoom } = useNetwork();
+  const { createRoom, joinRoom, error: networkError, leaveRoom, kickPlayer } = useNetwork();
   const { gameState, roomCode, localPlayer, isConnecting } = useGameStore();
 
   const [name, setName] = useState(() => localStorage.getItem('krypton_nickname') || '');
@@ -106,7 +106,12 @@ export function LobbyPage() {
               </CardHeader>
               <CardContent>
                 {localPlayer && (
-                  <PlayerList players={gameState.players} localPlayerId={localPlayer.id} compact />
+                  <PlayerList
+                    players={gameState.players}
+                    localPlayerId={localPlayer.id}
+                    compact
+                    onKick={kickPlayer}
+                  />
                 )}
               </CardContent>
             </Card>

@@ -25,6 +25,8 @@ type ClientManagerEvents = {
   playerLeft: { id: string };
   /** Fired when the connection to the host is lost. */
   disconnected: undefined;
+  /** Fired when kicked by the host. */
+  kicked: string;
   /** Fired on error. */
   error: Error;
 };
@@ -137,6 +139,10 @@ export class ClientManager extends EventEmitter<ClientManagerEvents> {
 
       case 'PLAYER_LEFT':
         this.emit('playerLeft', { id: msg.payload.id });
+        break;
+
+      case 'KICKED':
+        this.emit('kicked', msg.payload.reason);
         break;
 
       case 'GAME_OVER':

@@ -4,6 +4,7 @@ interface PlayerListProps {
   players: Player[];
   localPlayerId: string;
   compact?: boolean;
+  onKick?: (playerId: string) => void;
 }
 
 const TEAM_LABELS = {
@@ -38,7 +39,9 @@ function PlayerAvatar({ name, team }: { name: string; team: Player['team'] }) {
   );
 }
 
-export function PlayerList({ players, localPlayerId, compact = false }: PlayerListProps) {
+export function PlayerList({ players, localPlayerId, compact = false, onKick }: PlayerListProps) {
+  const isLocalPlayerHost = players.find((p) => p.id === localPlayerId)?.isHost ?? false;
+
   const teams = {
     red: players.filter((p) => p.team === 'red'),
     blue: players.filter((p) => p.team === 'blue'),
@@ -68,6 +71,16 @@ export function PlayerList({ players, localPlayerId, compact = false }: PlayerLi
               <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
                 Host
               </span>
+            )}
+            {isLocalPlayerHost && player.id !== localPlayerId && onKick && (
+              <button
+                type="button"
+                onClick={() => onKick(player.id)}
+                className="text-xs px-1.5 py-0.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-colors"
+                title="Remover jogador"
+              >
+                Remover
+              </button>
             )}
           </div>
         ))}
@@ -123,6 +136,16 @@ export function PlayerList({ players, localPlayerId, compact = false }: PlayerLi
                     <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 flex-shrink-0">
                       Host
                     </span>
+                  )}
+                  {isLocalPlayerHost && player.id !== localPlayerId && onKick && (
+                    <button
+                      type="button"
+                      onClick={() => onKick(player.id)}
+                      className="text-xs px-2 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-colors cursor-pointer"
+                      title="Remover jogador"
+                    >
+                      Remover
+                    </button>
                   )}
                 </div>
               ))}

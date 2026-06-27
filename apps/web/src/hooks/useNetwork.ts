@@ -106,6 +106,10 @@ export function useNetwork() {
           handleError('Desconectado do host.');
         });
 
+        client.on('kicked', (reason) => {
+          handleError(reason);
+        });
+
         client.on('error', (err) => handleError(err.message));
 
         setLocalPlayer({
@@ -207,6 +211,15 @@ export function useNetwork() {
     useGameStore.getState().reset();
   }, []);
 
+  const kickPlayer = useCallback(
+    (playerId: string) => {
+      if (hostManager) {
+        hostManager.kickPlayer(playerId);
+      }
+    },
+    [hostManager],
+  );
+
   return {
     role,
     isHost: role === 'host',
@@ -219,5 +232,6 @@ export function useNetwork() {
     revealCard,
     endTurn,
     leaveRoom,
+    kickPlayer,
   };
 }

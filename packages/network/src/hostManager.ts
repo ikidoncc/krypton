@@ -101,6 +101,27 @@ export class HostManager extends EventEmitter<HostManagerEvents> {
     log.info('HostManager destroyed.');
   }
 
+  /**
+   * Kicks a player from the room.
+   */
+  kickPlayer(playerId: string): void {
+    const conn = this.connections.get(playerId);
+    if (conn) {
+      log.info(`Host kicking player: ${playerId}`);
+      try {
+        conn.send({
+          type: 'KICKED',
+          payload: { reason: 'Você foi removido da sala pelo Host.' },
+          from: this.peer.id,
+        });
+      } catch (err) {
+        log.error(`Failed to send KICKED message to ${playerId}:`, err);
+      }
+      conn.close();
+      this.handlePlayerLeft(playerId);
+    }
+  }
+
   // ── Private: PeerJS setup ───────────────────────────────────
 
   private setupPeerListeners(): void {
