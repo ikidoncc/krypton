@@ -45,36 +45,66 @@ Antes de fazer o deploy, certifique-se de que o projeto funciona localmente.
 
 Para gerar os arquivos estáticos prontos para distribuição:
 
+### 1. Compilar apenas o Jogo (web)
 ```bash
 pnpm build
 ```
-
 O comando irá:
 1. Compilar os tipos dos pacotes internos (`packages/shared`, `packages/engine`, `packages/network`).
 2. Gerar o bundle otimizado da aplicação React em `apps/web/dist/`.
+
+### 2. Compilar apenas a Documentação (docs)
+```bash
+pnpm docs:build
+```
+O comando irá compilar os arquivos estáticos e gerar o indexador de busca local em `apps/docs/build/`.
+
+### 3. Compilar Todo o Workspace
+Você também pode compilar tanto o jogo quanto a documentação executando o build global a partir do workspace:
+```bash
+pnpm --recursive build
+```
 
 ---
 
 ## ☁️ Deploy na Cloudflare Pages
 
-O Krypton foi arquitetado para ser hospedado gratuitamente e sem servidores na **Cloudflare Pages**. Há duas formas de deploy:
+O Krypton foi arquitetado para ter deploys independentes das suas aplicações (`web` e `docs`) hospedados gratuitamente na **Cloudflare Pages**. Há duas formas de deploy para cada um:
+
+---
 
 ### Opção 1: Integração Automática via Git (Recomendado)
+
 Se o seu repositório estiver no GitHub ou GitLab:
 
+#### A. Deploy do Jogo (`apps/web`)
 1. Acesse o **Painel da Cloudflare** e vá em **Workers & Pages** -> **Create application** -> **Pages** -> **Connect to Git**.
 2. Selecione o repositório `krypton`.
 3. Defina as seguintes **Build Settings**:
-   * **Framework preset**: `Vite` (ou deixe em branco/None)
+   * **Framework preset**: `None`
    * **Build command**: `pnpm build`
    * **Build output directory**: `apps/web/dist`
    * **Root directory**: `/` (raiz do repositório)
 4. Em **Environment variables** (Variáveis de Ambiente), adicione:
-   * `NPM_FLAGS` = `--legacy-peer-deps` (se necessário, mas opcional com pnpm)
-   * A Cloudflare Pages detecta o `pnpm` automaticamente se o arquivo `pnpm-lock.yaml` estiver presente.
+   * `NODE_VERSION` = `20`
 5. Clique em **Save and Deploy**.
 
+#### B. Deploy da Documentação (`apps/docs`)
+1. Acesse o **Painel da Cloudflare** e vá em **Workers & Pages** -> **Create application** -> **Pages** -> **Connect to Git**.
+2. Selecione o repositório `krypton`.
+3. Defina as seguintes **Build Settings**:
+   * **Framework preset**: `None`
+   * **Build command**: `pnpm docs:build`
+   * **Build output directory**: `apps/docs/build`
+   * **Root directory**: `/` (raiz do repositório)
+4. Em **Environment variables** (Variáveis de Ambiente), adicione:
+   * `NODE_VERSION` = `20`
+5. Clique em **Save and Deploy**.
+
+---
+
 ### Opção 2: Deploy Manual via Wrangler CLI
+
 Caso queira subir os arquivos compilados localmente:
 
 1. Instale o Wrangler (CLI da Cloudflare):
@@ -85,13 +115,21 @@ Caso queira subir os arquivos compilados localmente:
    ```bash
    wrangler login
    ```
-3. Compile o projeto:
+3. Compile a aplicação desejada:
    ```bash
+   # Para o jogo:
    pnpm build
+   
+   # Para a documentação:
+   pnpm docs:build
    ```
-4. Publique a pasta de distribuição:
+4. Publique as respectivas pastas de distribuição:
    ```bash
+   # Deploy do jogo
    wrangler pages deploy apps/web/dist --project-name=krypton-game
+   
+   # Deploy da documentação
+   wrangler pages deploy apps/docs/build --project-name=krypton-docs
    ```
 
 ---
