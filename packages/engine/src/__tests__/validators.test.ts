@@ -7,12 +7,16 @@ import { canEndTurn, canGiveClue, canRevealCard, canStartGame, isGameOver } from
 // ── Test fixtures ─────────────────────────────────────────────
 
 function makePlayer(overrides: Partial<Player> = {}): Player {
+  const id = overrides.id || 'p1';
   return {
-    id: 'p1',
+    id,
+    clientId: overrides.clientId || id,
+    peerId: overrides.peerId || `peer-${id}`,
     name: 'Test',
     team: 'red',
     role: 'operative',
     isHost: false,
+    connected: true,
     ...overrides,
   };
 }

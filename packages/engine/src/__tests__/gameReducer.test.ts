@@ -7,12 +7,16 @@ import { gameReducer } from '../gameReducer.js';
 // ── Fixtures ──────────────────────────────────────────────────
 
 function makePlayer(overrides: Partial<Player> = {}): Player {
+  const id = overrides.id || 'p1';
   return {
-    id: 'p1',
+    id,
+    clientId: overrides.clientId || id,
+    peerId: overrides.peerId || `peer-${id}`,
     name: 'Test',
     team: 'red',
     role: 'operative',
     isHost: false,
+    connected: true,
     ...overrides,
   };
 }
@@ -310,5 +314,35 @@ describe('NEXT_TURN', () => {
     });
     const next = gameReducer(state, { type: 'NEXT_TURN', payload: { playerId: 'op' } });
     expect(next).toBe(state);
+  });
+});
+
+// ── RECONNECTION & DISCONNECTION ──────────────────────────────
+
+describe('RECONNECTION & DISCONNECTION', () => {
+  it('updates peerId and marks player connected on reconnect (ADD_PLAYER with existing id)', () => {
+    const player = makePlayer({ id: 'p1', peerId: 'peer-old', connected: true });
+    const state = makeLobbyState([player]);
+
+    // Reconnection payload (same id, new peerId, name changed)
+    const reconnected = makePlayer({ id: 'p1', peerId: 'peer-new', name: 'New Name' });
+    const next = gameReducer(state, { type: 'ADD_PLAYER', payload: { player: reconnected } });
+
+    expect(next.players).toHaveLength(1);
+    expect(next.players[0]!.peerId).toBe('peer-new');
+    expect(next.players[0]!.name).toBe('New Name');
+    expect(next.players[0]!.connected).toBe(true);
+    expect(next.players[0]!.team).toBe('red'); // Preserves team
+    expect(next.players[0]!.role).toBe('operative'); // Preserves role
+  });
+
+  it('marks player connected = false on DISCONNECT_PLAYER action', () => {
+    const player = makePlayer({ id: 'p1', connected: true });
+    const state = makeLobbyState([player]);
+
+    const next = gameReducer(state, { type: 'DISCONNECT_PLAYER', payload: { id: 'p1' } });
+
+    expect(next.players).toHaveLength(1);
+    expect(next.players[0]!.connected).toBe(false);
   });
 });

@@ -22,7 +22,7 @@
 import type { EngineAction } from '@krypton/engine';
 import { canStartGame, gameReducer, maskBoardForOperative } from '@krypton/engine';
 import type { GameState, Message, Player, SyncStateMessage } from '@krypton/shared';
-import { createInitialGameState } from '@krypton/shared';
+import { createInitialGameState, getClientId } from '@krypton/shared';
 import type { DataConnection } from 'peerjs';
 import { EventEmitter } from './eventEmitter.js';
 import type { Peer } from './peer.js';
@@ -54,12 +54,16 @@ export class HostManager extends EventEmitter<HostManagerEvents> {
     this.peer = peer;
 
     // Build the host player
+    const hostClientId = getClientId();
     this.hostPlayer = {
-      id: peer.id,
+      id: hostClientId,
+      clientId: hostClientId,
+      peerId: peer.id,
       name: hostName,
       team: 'spectator',
       role: null,
       isHost: true,
+      connected: true,
     };
 
     // Bootstrap state with the host already in the player list
@@ -173,15 +177,19 @@ export class HostManager extends EventEmitter<HostManagerEvents> {
   private routeMessage(conn: DataConnection, msg: Message): void {
     switch (msg.type) {
       case 'JOIN_ROOM':
-        this.handleJoinRoom(conn, msg.payload.name);
+        this.handleJoinRoom(conn, msg.payload.name, msg.payload.clientId);
         break;
 
-      case 'UPDATE_PLAYER':
-        this.applyAndBroadcast({
-          type: 'UPDATE_PLAYER',
-          payload: { id: conn.peer, team: msg.payload.team, role: msg.payload.role },
-        });
+      case 'UPDATE_PLAYER': {
+        const player = this.findPlayer(conn.peer);
+        if (player) {
+          this.applyAndBroadcast({
+            type: 'UPDATE_PLAYER',
+            payload: { id: player.id, team: msg.payload.team, role: msg.payload.role },
+          });
+        }
         break;
+      }
 
       case 'START_GAME': {
         const player = this.findPlayer(conn.peer);
@@ -194,80 +202,147 @@ export class HostManager extends EventEmitter<HostManagerEvents> {
         break;
       }
 
-      case 'CLUE':
-        this.applyAndBroadcast({
-          type: 'GIVE_CLUE',
-          payload: {
-            playerId: conn.peer,
-            word: msg.payload.word,
-            count: msg.payload.count,
-          },
-        });
+      case 'CLUE': {
+        const player = this.findPlayer(conn.peer);
+        if (player) {
+          this.applyAndBroadcast({
+            type: 'GIVE_CLUE',
+            payload: {
+              playerId: player.id,
+              word: msg.payload.word,
+              count: msg.payload.count,
+            },
+          });
+        }
         break;
+      }
 
-      case 'REVEAL_CARD':
-        this.applyAndBroadcast({
-          type: 'REVEAL_CARD',
-          payload: { playerId: conn.peer, cardId: msg.payload.cardId },
-        });
+      case 'REVEAL_CARD': {
+        const player = this.findPlayer(conn.peer);
+        if (player) {
+          this.applyAndBroadcast({
+            type: 'REVEAL_CARD',
+            payload: { playerId: player.id, cardId: msg.payload.cardId },
+          });
+        }
         break;
+      }
 
-      case 'NEXT_TURN':
-        this.applyAndBroadcast({
-          type: 'NEXT_TURN',
-          payload: { playerId: conn.peer },
-        });
+      case 'NEXT_TURN': {
+        const player = this.findPlayer(conn.peer);
+        if (player) {
+          this.applyAndBroadcast({
+            type: 'NEXT_TURN',
+            payload: { playerId: player.id },
+          });
+        }
         break;
+      }
 
       default:
         log.warn(`Unhandled message type from ${conn.peer}: ${(msg as Message).type}`);
     }
   }
 
-  private handleJoinRoom(conn: DataConnection, name: string): void {
-    const newPlayer: Player = {
-      id: conn.peer,
-      name,
-      team: 'spectator',
-      role: null,
-      isHost: false,
-    };
+  private handleJoinRoom(conn: DataConnection, name: string, clientId: string): void {
+    const existingPlayer = this.state.players.find((p) => p.clientId === clientId);
 
-    // Add player to state
-    this.applyAndBroadcast({
-      type: 'ADD_PLAYER',
-      payload: { player: newPlayer },
-    });
+    if (existingPlayer) {
+      log.info(`Player re-connecting: ${name} (clientId: ${clientId}, new peerId: ${conn.peer})`);
 
-    // Broadcast PLAYER_JOINED to all other clients
-    this.broadcast({
-      type: 'PLAYER_JOINED',
-      payload: {
-        player: newPlayer,
-        players: this.state.players,
-      },
-      from: this.peer.id,
-    });
+      // 1. Close and delete old connection reference if peer ID changed
+      const oldPeerId = existingPlayer.peerId;
+      if (oldPeerId !== conn.peer) {
+        const oldConn = this.connections.get(oldPeerId);
+        if (oldConn) {
+          try {
+            oldConn.close();
+          } catch {}
+          this.connections.delete(oldPeerId);
+        }
+      }
 
-    this.emit('playerJoined', newPlayer);
-    log.info(`Player joined: ${name} (${conn.peer})`);
+      // Update mapped connection
+      this.connections.set(conn.peer, conn);
+
+      // Build updated player instance
+      const reconnectedPlayer: Player = {
+        ...existingPlayer,
+        peerId: conn.peer,
+        name,
+        connected: true,
+      };
+
+      // 2. Dispatch to engine reducer
+      this.applyAndBroadcast({
+        type: 'ADD_PLAYER',
+        payload: { player: reconnectedPlayer },
+      });
+
+      // 3. Broadcast PLAYER_JOINED
+      this.broadcast({
+        type: 'PLAYER_JOINED',
+        payload: {
+          player: reconnectedPlayer,
+          players: this.state.players,
+        },
+        from: this.peer.id,
+      });
+
+      this.emit('playerJoined', reconnectedPlayer);
+    } else {
+      // Create new player
+      const newPlayer: Player = {
+        id: clientId,
+        clientId,
+        peerId: conn.peer,
+        name,
+        team: 'spectator',
+        role: null,
+        isHost: false,
+        connected: true,
+      };
+
+      this.connections.set(conn.peer, conn);
+
+      this.applyAndBroadcast({
+        type: 'ADD_PLAYER',
+        payload: { player: newPlayer },
+      });
+
+      this.broadcast({
+        type: 'PLAYER_JOINED',
+        payload: {
+          player: newPlayer,
+          players: this.state.players,
+        },
+        from: this.peer.id,
+      });
+
+      this.emit('playerJoined', newPlayer);
+      log.info(`Player joined: ${name} (clientId: ${clientId}, peerId: ${conn.peer})`);
+    }
   }
 
   private handlePlayerLeft(peerId: string): void {
     this.connections.delete(peerId);
 
+    const player = this.state.players.find((p) => p.peerId === peerId);
+    if (!player) return;
+
+    // Soft disconnect (mark connected = false) instead of delete
     this.applyAndBroadcast({
-      type: 'REMOVE_PLAYER',
-      payload: { id: peerId },
+      type: 'DISCONNECT_PLAYER',
+      payload: { id: player.id },
     });
 
     this.broadcast({
       type: 'PLAYER_LEFT',
-      payload: { id: peerId },
+      payload: { id: player.id },
       from: this.peer.id,
     });
 
-    this.emit('playerLeft', peerId);
+    this.emit('playerLeft', player.id);
   }
 
   // ── Private: Engine + broadcast ─────────────────────────────
@@ -324,6 +399,6 @@ export class HostManager extends EventEmitter<HostManagerEvents> {
   }
 
   private findPlayer(peerId: string): Player | undefined {
-    return this.state.players.find((p: Player) => p.id === peerId);
+    return this.state.players.find((p: Player) => p.peerId === peerId);
   }
 }

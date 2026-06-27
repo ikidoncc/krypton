@@ -15,6 +15,7 @@ import { canEndTurn, canGiveClue, canRevealCard, isGameOver } from './validators
 export type EngineAction =
   | { type: 'ADD_PLAYER'; payload: { player: Player } }
   | { type: 'REMOVE_PLAYER'; payload: { id: string } }
+  | { type: 'DISCONNECT_PLAYER'; payload: { id: string } }
   | { type: 'UPDATE_PLAYER'; payload: { id: string; team: Team; role: Role | null } }
   | { type: 'START_GAME'; payload?: { startingTeam?: 'red' | 'blue' } }
   | { type: 'GIVE_CLUE'; payload: { playerId: string; word: string; count: number } }
@@ -63,8 +64,16 @@ export function gameReducer(state: GameState, action: EngineAction): GameState {
 
     case 'ADD_PLAYER': {
       const { player } = action.payload;
-      // Avoid duplicates
-      if (state.players.some((p: Player) => p.id === player.id)) return state;
+      const existingIndex = state.players.findIndex((p: Player) => p.id === player.id);
+      if (existingIndex !== -1) {
+        // Reconnection: update connection info (peerId), name and set connected to true
+        const updatedPlayers = state.players.map((p: Player) =>
+          p.id === player.id
+            ? { ...p, peerId: player.peerId, name: player.name, connected: true }
+            : p,
+        );
+        return { ...state, players: updatedPlayers };
+      }
       return { ...state, players: [...state.players, player] };
     }
 
@@ -77,6 +86,14 @@ export function gameReducer(state: GameState, action: EngineAction): GameState {
         removedWasHost && players.length > 0
           ? players.map((p: Player, i: number) => (i === 0 ? { ...p, isHost: true } : p))
           : players;
+      return { ...state, players: updatedPlayers };
+    }
+
+    case 'DISCONNECT_PLAYER': {
+      const { id } = action.payload;
+      const updatedPlayers = state.players.map((p: Player) =>
+        p.id === id ? { ...p, connected: false } : p,
+      );
       return { ...state, players: updatedPlayers };
     }
 

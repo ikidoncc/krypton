@@ -24,6 +24,8 @@ export interface JoinRoomMessage {
   payload: {
     /** The display name the player chose. */
     name: string;
+    /** The permanent client ID. */
+    clientId: string;
   };
   from: string;
 }

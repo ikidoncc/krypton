@@ -11,6 +11,8 @@ export {
   OTHER_TEAM_CARDS,
   STARTING_TEAM_CARDS,
 } from './board.js';
+// ── Client Identity ───────────────────────────────────────────
+export { getClientId } from './client/clientIdentity.js';
 // ── Game State ────────────────────────────────────────────────
 export type { Clue, GamePhase, GameState, Scores, TurnPhase } from './game.js';
 export { createInitialGameState } from './game.js';

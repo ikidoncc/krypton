@@ -1,5 +1,6 @@
 import { ClientManager, createRoom, HostManager, joinRoom } from '@krypton/network';
 import type { Role, Team } from '@krypton/shared';
+import { getClientId } from '@krypton/shared';
 import { useCallback, useState } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { usePeerStore } from '@/store/usePeerStore';
@@ -37,12 +38,17 @@ export function useNetwork() {
 
         // Hydrate local player from host state
         const hostState = host.getState();
-        const localPlayer = hostState.players.find((p) => p.id === peer.id) ?? {
-          id: peer.id,
+        const hostClientId = getClientId();
+        const hostPlayer = hostState.players.find((p) => p.id === hostClientId);
+        const localPlayer = hostPlayer ?? {
+          id: hostClientId,
+          clientId: hostClientId,
+          peerId: peer.id,
           name,
           team: 'spectator' as Team,
           role: null,
           isHost: true,
+          connected: true,
         };
 
         setLocalPlayer(localPlayer);
@@ -53,7 +59,7 @@ export function useNetwork() {
         host.on('stateChanged', (state) => {
           setGameState(state);
           // Keep localPlayer in sync
-          const updated = state.players.find((p) => p.id === peer.id);
+          const updated = state.players.find((p) => p.id === hostClientId);
           if (updated) setLocalPlayer(updated);
         });
 
@@ -88,7 +94,8 @@ export function useNetwork() {
 
       try {
         const { peer, hostConnection } = await joinRoom(code.trim().toUpperCase());
-        const client = new ClientManager(peer, hostConnection, peer.id);
+        const clientId = getClientId();
+        const client = new ClientManager(peer, hostConnection, clientId);
 
         setClientManager(client);
 
@@ -98,7 +105,7 @@ export function useNetwork() {
         // Listen for state updates from the host
         client.on('stateUpdated', (state) => {
           setGameState(state);
-          const updated = state.players.find((p) => p.id === peer.id);
+          const updated = state.players.find((p) => p.id === clientId);
           if (updated) setLocalPlayer(updated);
         });
 
@@ -113,11 +120,14 @@ export function useNetwork() {
         client.on('error', (err) => handleError(err.message));
 
         setLocalPlayer({
-          id: peer.id,
+          id: clientId,
+          clientId,
+          peerId: peer.id,
           name,
           team: 'spectator',
           role: null,
           isHost: false,
+          connected: true,
         });
 
         setRoomCode(code.trim().toUpperCase());

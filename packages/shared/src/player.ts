@@ -10,8 +10,12 @@ export type Role = 'spymaster' | 'operative';
 
 /** A connected player in the game. */
 export interface Player {
-  /** Unique identifier (PeerJS peer ID). */
+  /** Unique identifier (usually Client ID). */
   readonly id: string;
+  /** Permanent Client ID identifying the device. */
+  readonly clientId: string;
+  /** Current connection PeerJS peer ID. */
+  peerId: string;
   /** Display name chosen by the player. */
   name: string;
   /** The team this player has joined. */
@@ -20,4 +24,6 @@ export interface Player {
   role: Role | null;
   /** Whether this player is the current session host. */
   isHost: boolean;
+  /** Whether the player is currently connected. */
+  connected: boolean;
 }

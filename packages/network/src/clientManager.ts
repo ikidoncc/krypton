@@ -60,7 +60,11 @@ export class ClientManager extends EventEmitter<ClientManagerEvents> {
 
   /** Sent right after connecting to introduce ourselves to the host. */
   sendJoinRoom(name: string): void {
-    this.send({ type: 'JOIN_ROOM', payload: { name }, from: this.localPlayerId });
+    this.send({
+      type: 'JOIN_ROOM',
+      payload: { name, clientId: this.localPlayerId },
+      from: this.peer.id,
+    });
   }
 
   /** Update our team and role selection in the lobby. */
