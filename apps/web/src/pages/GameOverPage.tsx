@@ -17,13 +17,13 @@ export function GameOverPage() {
   const winnerColorClass = winner === 'red' ? 'text-[var(--color-team-red)]' : 'text-[var(--color-team-blue)]';
 
   const handlePlayAgain = () => {
-    // Only the host can restart the game back to lobby phase
+    // Only the host can restart the game back to teams phase
     if (localPlayer.isHost) {
       const { hostManager } = usePeerStore.getState();
       if (hostManager) {
         hostManager.dispatch({
           type: 'SET_PHASE',
-          payload: { phase: 'lobby' },
+          payload: { phase: 'teams' },
         });
       }
     }

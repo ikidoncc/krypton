@@ -11,23 +11,27 @@ export function LobbyPage() {
   const { createRoom, joinRoom, error: networkError, leaveRoom } = useNetwork();
   const { gameState, roomCode, localPlayer, isConnecting } = useGameStore();
 
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-  const [hasEnteredName, setHasEnteredName] = useState(false);
+  const [name, setName] = useState(() => localStorage.getItem('krypton_nickname') || '');
+  const [code, setCode] = useState(() => localStorage.getItem('krypton_last_room') || '');
+  const [hasEnteredName, setHasEnteredName] = useState(() => !!localStorage.getItem('krypton_nickname'));
 
   const handleCreate = async () => {
     if (!name.trim()) return;
+    localStorage.setItem('krypton_nickname', name.trim());
     await createRoom(name.trim());
   };
 
   const handleJoin = async () => {
     if (!name.trim() || !code.trim()) return;
+    localStorage.setItem('krypton_nickname', name.trim());
+    localStorage.setItem('krypton_last_room', code.trim().toUpperCase());
     await joinRoom(name.trim(), code.trim());
   };
 
   const handleSetName = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
+      localStorage.setItem('krypton_nickname', name.trim());
       setHasEnteredName(true);
     }
   };
