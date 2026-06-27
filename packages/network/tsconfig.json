@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "paths": {
+      "@krypton/shared": ["../shared/src/index.ts"],
+      "@krypton/engine": ["../engine/src/index.ts"]
+    }
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../shared" },
+    { "path": "../engine" }
+  ]
+}
