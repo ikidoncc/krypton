@@ -10,8 +10,8 @@
 //   - `from`    → sender's peer ID (set by the sender)
 // ─────────────────────────────────────────────────────────────
 
+import type { Clue, GameState } from './game.js';
 import type { Player } from './player.js';
-import type { GameState, Clue } from './game.js';
 
 // ── Individual message shapes ─────────────────────────────────
 
@@ -164,9 +164,9 @@ export function isMessage(value: unknown): value is Message {
     typeof value === 'object' &&
     value !== null &&
     'type' in value &&
-    typeof (value as Record<string, unknown>)['type'] === 'string' &&
+    typeof (value as Record<string, unknown>).type === 'string' &&
     'from' in value &&
-    typeof (value as Record<string, unknown>)['from'] === 'string' &&
+    typeof (value as Record<string, unknown>).from === 'string' &&
     'payload' in value
   );
 }

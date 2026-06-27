@@ -4,7 +4,7 @@
 
 import type { DataConnection } from 'peerjs';
 import { createPeer } from './peer.js';
-import { generateRoomCode, roomCodeToPeerId, log } from './utils.js';
+import { generateRoomCode, log, roomCodeToPeerId } from './utils.js';
 
 // ── Create room (host flow) ───────────────────────────────────
 

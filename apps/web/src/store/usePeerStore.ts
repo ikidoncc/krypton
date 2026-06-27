@@ -1,5 +1,5 @@
+import type { ClientManager, HostManager } from '@krypton/network';
 import { create } from 'zustand';
-import type { HostManager, ClientManager } from '@krypton/network';
 
 type ConnectionRole = 'host' | 'client';
 

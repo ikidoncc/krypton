@@ -6,11 +6,11 @@
 //       The host calls this on every incoming player intention.
 // ─────────────────────────────────────────────────────────────
 
-import type { GameState, Player, Team, Role, Card } from '@krypton/shared';
-import { STARTING_TEAM_CARDS, OTHER_TEAM_CARDS } from '@krypton/shared';
+import type { Card, GameState, Player, Role, Team } from '@krypton/shared';
+import { OTHER_TEAM_CARDS, STARTING_TEAM_CARDS } from '@krypton/shared';
 import { generateBoard } from './boardGenerator.js';
 import { selectStartingTeam } from './teamGenerator.js';
-import { canGiveClue, canRevealCard, canEndTurn, isGameOver } from './validators.js';
+import { canEndTurn, canGiveClue, canRevealCard, isGameOver } from './validators.js';
 
 export type EngineAction =
   | { type: 'ADD_PLAYER'; payload: { player: Player } }
@@ -40,8 +40,8 @@ function calcRemainingCards(
   _board: GameState['board'],
   startingTeam: 'red' | 'blue',
 ): { red: number; blue: number } {
-  const starting = STARTING_TEAM_CARDS;   // 9
-  const other = OTHER_TEAM_CARDS;         // 8
+  const starting = STARTING_TEAM_CARDS; // 9
+  const other = OTHER_TEAM_CARDS; // 8
   return {
     red: startingTeam === 'red' ? starting : other,
     blue: startingTeam === 'blue' ? starting : other,
@@ -73,17 +73,16 @@ export function gameReducer(state: GameState, action: EngineAction): GameState {
       const players = state.players.filter((p: Player) => p.id !== id);
       // If the host left, promote the first remaining player
       const removedWasHost = state.players.find((p: Player) => p.id === id)?.isHost ?? false;
-      const updatedPlayers = removedWasHost && players.length > 0
-        ? players.map((p: Player, i: number) => (i === 0 ? { ...p, isHost: true } : p))
-        : players;
+      const updatedPlayers =
+        removedWasHost && players.length > 0
+          ? players.map((p: Player, i: number) => (i === 0 ? { ...p, isHost: true } : p))
+          : players;
       return { ...state, players: updatedPlayers };
     }
 
     case 'UPDATE_PLAYER': {
       const { id, team, role } = action.payload;
-      const players = state.players.map((p: Player) =>
-        p.id === id ? { ...p, team, role } : p,
-      );
+      const players = state.players.map((p: Player) => (p.id === id ? { ...p, team, role } : p));
       return { ...state, players };
     }
 
@@ -145,8 +144,8 @@ export function gameReducer(state: GameState, action: EngineAction): GameState {
       const revealedColor = revealedCard.color;
 
       // Update scores and remainingCards
-      let scores = { ...state.scores };
-      let remainingCards = { ...state.remainingCards };
+      const scores = { ...state.scores };
+      const remainingCards = { ...state.remainingCards };
 
       if (revealedColor === 'red' || revealedColor === 'blue') {
         scores[revealedColor] += 1;
@@ -179,8 +178,7 @@ export function gameReducer(state: GameState, action: EngineAction): GameState {
         revealedColor !== 'assassin' &&
         revealedColor !== state.currentTeam;
 
-      const outOfGuesses =
-        nextState.guessesLeft !== Infinity && nextState.guessesLeft <= 0;
+      const outOfGuesses = nextState.guessesLeft !== Infinity && nextState.guessesLeft <= 0;
 
       if (wrongTeamCard || outOfGuesses) {
         return {

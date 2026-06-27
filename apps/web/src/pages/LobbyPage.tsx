@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { PlayerList } from '@/components/shared/PlayerList';
+import { RoomCode } from '@/components/shared/RoomCode';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNetwork } from '@/hooks/useNetwork';
 import { useGameStore } from '@/store/useGameStore';
 import { usePeerStore } from '@/store/usePeerStore';
-import { RoomCode } from '@/components/shared/RoomCode';
-import { PlayerList } from '@/components/shared/PlayerList';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 export function LobbyPage() {
   const { createRoom, joinRoom, error: networkError, leaveRoom } = useNetwork();
@@ -13,7 +13,9 @@ export function LobbyPage() {
 
   const [name, setName] = useState(() => localStorage.getItem('krypton_nickname') || '');
   const [code, setCode] = useState(() => localStorage.getItem('krypton_last_room') || '');
-  const [hasEnteredName, setHasEnteredName] = useState(() => !!localStorage.getItem('krypton_nickname'));
+  const [hasEnteredName, setHasEnteredName] = useState(
+    () => !!localStorage.getItem('krypton_nickname'),
+  );
 
   const handleCreate = async () => {
     if (!name.trim()) return;
@@ -122,7 +124,7 @@ export function LobbyPage() {
                     <p className="text-sm text-[var(--color-krypton-muted)]">
                       Avançar para a divisão de equipes e definição de papéis.
                     </p>
-                     <Button
+                    <Button
                       id="go-to-teams-btn"
                       onClick={() => {
                         const { hostManager } = usePeerStore.getState();
@@ -152,11 +154,7 @@ export function LobbyPage() {
                 </Card>
               )}
 
-              <Button
-                variant="destructive"
-                onClick={leaveRoom}
-                className="w-full py-6 font-bold"
-              >
+              <Button variant="destructive" onClick={leaveRoom} className="w-full py-6 font-bold">
                 Sair da Sala
               </Button>
             </div>
@@ -173,6 +171,7 @@ export function LobbyPage() {
         <CardHeader className="text-center">
           <div className="flex justify-between items-center mb-4">
             <button
+              type="button"
               onClick={() => setHasEnteredName(false)}
               className="text-xs text-[var(--color-krypton-muted)] hover:text-[var(--color-krypton-text)]"
             >
@@ -200,7 +199,9 @@ export function LobbyPage() {
             {/* Create Room */}
             <div className="flex flex-col justify-between rounded-xl border border-[var(--color-krypton-border)] bg-[var(--color-krypton-bg)] p-5">
               <div>
-                <h3 className="font-bold text-lg text-[var(--color-krypton-text)] mb-2">Criar Sala</h3>
+                <h3 className="font-bold text-lg text-[var(--color-krypton-text)] mb-2">
+                  Criar Sala
+                </h3>
                 <p className="text-xs text-[var(--color-krypton-muted)] mb-4">
                   Seja o Host, convide seus amigos e gerencie as equipes.
                 </p>
@@ -218,7 +219,9 @@ export function LobbyPage() {
             {/* Join Room */}
             <div className="flex flex-col gap-4 rounded-xl border border-[var(--color-krypton-border)] bg-[var(--color-krypton-bg)] p-5">
               <div>
-                <h3 className="font-bold text-lg text-[var(--color-krypton-text)] mb-1">Entrar em Sala</h3>
+                <h3 className="font-bold text-lg text-[var(--color-krypton-text)] mb-1">
+                  Entrar em Sala
+                </h3>
                 <p className="text-xs text-[var(--color-krypton-muted)]">
                   Digite o código da sala de 6 caracteres.
                 </p>

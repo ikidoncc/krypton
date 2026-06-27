@@ -10,7 +10,6 @@
  */
 export type CardColorValue = 'red' | 'blue' | 'neutral' | 'assassin';
 
-
 /**
  * A single card on the 5×5 board.
  * The `color` field is always present in the host's state but
@@ -36,11 +35,31 @@ export interface Card {
  * The tuple type enforces this at compile time.
  */
 export type Board = [
-  Card, Card, Card, Card, Card,
-  Card, Card, Card, Card, Card,
-  Card, Card, Card, Card, Card,
-  Card, Card, Card, Card, Card,
-  Card, Card, Card, Card, Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
+  Card,
 ];
 
 /** Standard card distribution per game. */

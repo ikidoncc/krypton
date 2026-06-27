@@ -22,14 +22,17 @@ function PlayerAvatar({ name, team }: { name: string; team: Player['team'] }) {
   const colors = {
     red: 'bg-[var(--color-team-red-dim)] text-[var(--color-team-red)] border-[var(--color-team-red)]',
     blue: 'bg-[var(--color-team-blue-dim)] text-[var(--color-team-blue)] border-[var(--color-team-blue)]',
-    spectator: 'bg-[var(--color-krypton-surface)] text-[var(--color-krypton-muted)] border-[var(--color-krypton-border)]',
+    spectator:
+      'bg-[var(--color-krypton-surface)] text-[var(--color-krypton-muted)] border-[var(--color-krypton-border)]',
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       w-8 h-8 rounded-full border flex items-center justify-center
       text-sm font-bold flex-shrink-0 ${colors[team]}
-    `}>
+    `}
+    >
       {initial}
     </div>
   );
@@ -46,10 +49,7 @@ export function PlayerList({ players, localPlayerId, compact = false }: PlayerLi
     return (
       <div className="flex flex-col gap-1">
         {players.map((player) => (
-          <div
-            key={player.id}
-            className="flex items-center gap-2 px-2 py-1.5 rounded-lg"
-          >
+          <div key={player.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg">
             <PlayerAvatar name={player.name} team={player.team} />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-[var(--color-krypton-text)] truncate">
@@ -81,12 +81,14 @@ export function PlayerList({ players, localPlayerId, compact = false }: PlayerLi
         if (teams[team].length === 0) return null;
         return (
           <div key={team}>
-            <p className={`
+            <p
+              className={`
               text-xs uppercase tracking-widest font-semibold mb-2
               ${team === 'red' ? 'text-[var(--color-team-red)]' : ''}
               ${team === 'blue' ? 'text-[var(--color-team-blue)]' : ''}
               ${team === 'spectator' ? 'text-[var(--color-krypton-muted)]' : ''}
-            `}>
+            `}
+            >
               {TEAM_LABELS[team]}
             </p>
             <div className="flex flex-col gap-1">
@@ -96,9 +98,11 @@ export function PlayerList({ players, localPlayerId, compact = false }: PlayerLi
                   className={`
                     flex items-center gap-3 px-3 py-2 rounded-lg
                     border transition-colors
-                    ${player.id === localPlayerId
-                      ? 'bg-[var(--color-krypton-surface)] border-[var(--color-krypton-border)]'
-                      : 'bg-transparent border-transparent'}
+                    ${
+                      player.id === localPlayerId
+                        ? 'bg-[var(--color-krypton-surface)] border-[var(--color-krypton-border)]'
+                        : 'bg-transparent border-transparent'
+                    }
                   `}
                 >
                   <PlayerAvatar name={player.name} team={player.team} />
@@ -106,7 +110,9 @@ export function PlayerList({ players, localPlayerId, compact = false }: PlayerLi
                     <p className="text-sm font-medium text-[var(--color-krypton-text)] truncate">
                       {player.name}
                       {player.id === localPlayerId && (
-                        <span className="ml-1 text-xs text-[var(--color-krypton-muted)]">(você)</span>
+                        <span className="ml-1 text-xs text-[var(--color-krypton-muted)]">
+                          (você)
+                        </span>
                       )}
                     </p>
                     <p className="text-xs text-[var(--color-krypton-muted)]">

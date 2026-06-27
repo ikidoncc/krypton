@@ -1,6 +1,6 @@
+import { ClientManager, createRoom, HostManager, joinRoom } from '@krypton/network';
+import type { Role, Team } from '@krypton/shared';
 import { useCallback, useState } from 'react';
-import type { Team, Role } from '@krypton/shared';
-import { HostManager, ClientManager, createRoom, joinRoom } from '@krypton/network';
 import { useGameStore } from '@/store/useGameStore';
 import { usePeerStore } from '@/store/usePeerStore';
 
@@ -14,114 +14,143 @@ export function useNetwork() {
   const { hostManager, clientManager, role } = usePeerStore();
   const [localError, setLocalError] = useState<string | null>(null);
 
-  const handleError = useCallback((msg: string) => {
-    setLocalError(msg);
-    setError(msg);
-    setConnecting(false);
-  }, [setError, setConnecting]);
+  const handleError = useCallback(
+    (msg: string) => {
+      setLocalError(msg);
+      setError(msg);
+      setConnecting(false);
+    },
+    [setError, setConnecting],
+  );
 
   // ── Host: Create room ───────────────────────────────────────
 
-  const handleCreateRoom = useCallback(async (name: string) => {
-    setConnecting(true);
-    setLocalError(null);
-    setError(null);
+  const handleCreateRoom = useCallback(
+    async (name: string) => {
+      setConnecting(true);
+      setLocalError(null);
+      setError(null);
 
-    try {
-      const { peer, roomCode } = await createRoom();
-      const host = new HostManager(peer, name);
+      try {
+        const { peer, roomCode } = await createRoom();
+        const host = new HostManager(peer, name);
 
-      // Hydrate local player from host state
-      const hostState = host.getState();
-      const localPlayer = hostState.players.find((p) => p.id === peer.id) ?? {
-        id: peer.id,
-        name,
-        team: 'spectator' as Team,
-        role: null,
-        isHost: true,
-      };
+        // Hydrate local player from host state
+        const hostState = host.getState();
+        const localPlayer = hostState.players.find((p) => p.id === peer.id) ?? {
+          id: peer.id,
+          name,
+          team: 'spectator' as Team,
+          role: null,
+          isHost: true,
+        };
 
-      setLocalPlayer(localPlayer);
-      setRoomCode(roomCode);
-      setHostManager(host);
+        setLocalPlayer(localPlayer);
+        setRoomCode(roomCode);
+        setHostManager(host);
 
-      // Listen for state changes from the engine
-      host.on('stateChanged', (state) => {
-        setGameState(state);
-        // Keep localPlayer in sync
-        const updated = state.players.find((p) => p.id === peer.id);
-        if (updated) setLocalPlayer(updated);
-      });
+        // Listen for state changes from the engine
+        host.on('stateChanged', (state) => {
+          setGameState(state);
+          // Keep localPlayer in sync
+          const updated = state.players.find((p) => p.id === peer.id);
+          if (updated) setLocalPlayer(updated);
+        });
 
-      host.on('error', (err) => handleError(err.message));
+        host.on('error', (err) => handleError(err.message));
 
-      // Trigger initial state sync
-      setGameState(hostState);
-
-    } catch (err) {
-      handleError((err as Error).message ?? 'Erro ao criar sala');
-    } finally {
-      setConnecting(false);
-    }
-  }, [setConnecting, setError, setGameState, setLocalPlayer, setRoomCode, setHostManager, handleError]);
+        // Trigger initial state sync
+        setGameState(hostState);
+      } catch (err) {
+        handleError((err as Error).message ?? 'Erro ao criar sala');
+      } finally {
+        setConnecting(false);
+      }
+    },
+    [
+      setConnecting,
+      setError,
+      setGameState,
+      setLocalPlayer,
+      setRoomCode,
+      setHostManager,
+      handleError,
+    ],
+  );
 
   // ── Client: Join room ───────────────────────────────────────
 
-  const handleJoinRoom = useCallback(async (name: string, code: string) => {
-    setConnecting(true);
-    setLocalError(null);
-    setError(null);
+  const handleJoinRoom = useCallback(
+    async (name: string, code: string) => {
+      setConnecting(true);
+      setLocalError(null);
+      setError(null);
 
-    try {
-      const { peer, hostConnection } = await joinRoom(code.trim().toUpperCase());
-      const client = new ClientManager(peer, hostConnection, peer.id);
+      try {
+        const { peer, hostConnection } = await joinRoom(code.trim().toUpperCase());
+        const client = new ClientManager(peer, hostConnection, peer.id);
 
-      setClientManager(client);
+        setClientManager(client);
 
-      // Send our name to the host immediately
-      client.sendJoinRoom(name);
+        // Send our name to the host immediately
+        client.sendJoinRoom(name);
 
-      // Listen for state updates from the host
-      client.on('stateUpdated', (state) => {
-        setGameState(state);
-        const updated = state.players.find((p) => p.id === peer.id);
-        if (updated) setLocalPlayer(updated);
-      });
+        // Listen for state updates from the host
+        client.on('stateUpdated', (state) => {
+          setGameState(state);
+          const updated = state.players.find((p) => p.id === peer.id);
+          if (updated) setLocalPlayer(updated);
+        });
 
-      client.on('disconnected', () => {
-        handleError('Desconectado do host.');
-      });
+        client.on('disconnected', () => {
+          handleError('Desconectado do host.');
+        });
 
-      client.on('error', (err) => handleError(err.message));
+        client.on('error', (err) => handleError(err.message));
 
-      setLocalPlayer({
-        id: peer.id,
-        name,
-        team: 'spectator',
-        role: null,
-        isHost: false,
-      });
+        setLocalPlayer({
+          id: peer.id,
+          name,
+          team: 'spectator',
+          role: null,
+          isHost: false,
+        });
 
-      setRoomCode(code.trim().toUpperCase());
-
-    } catch (err) {
-      handleError((err as Error).message ?? 'Sala não encontrada');
-    } finally {
-      setConnecting(false);
-    }
-  }, [setConnecting, setError, setGameState, setLocalPlayer, setRoomCode, setClientManager, handleError]);
+        setRoomCode(code.trim().toUpperCase());
+      } catch (err) {
+        handleError((err as Error).message ?? 'Sala não encontrada');
+      } finally {
+        setConnecting(false);
+      }
+    },
+    [
+      setConnecting,
+      setError,
+      setGameState,
+      setLocalPlayer,
+      setRoomCode,
+      setClientManager,
+      handleError,
+    ],
+  );
 
   // ── Shared actions (delegate to host or client) ─────────────
 
-  const updatePlayer = useCallback((team: Team, role: Role | null) => {
-    if (hostManager) {
-      const { localPlayer } = useGameStore.getState();
-      if (!localPlayer) return;
-      hostManager.dispatch({ type: 'UPDATE_PLAYER', payload: { id: localPlayer.id, team, role } });
-    } else {
-      clientManager?.sendUpdatePlayer(team, role);
-    }
-  }, [hostManager, clientManager]);
+  const updatePlayer = useCallback(
+    (team: Team, role: Role | null) => {
+      if (hostManager) {
+        const { localPlayer } = useGameStore.getState();
+        if (!localPlayer) return;
+        hostManager.dispatch({
+          type: 'UPDATE_PLAYER',
+          payload: { id: localPlayer.id, team, role },
+        });
+      } else {
+        clientManager?.sendUpdatePlayer(team, role);
+      }
+    },
+    [hostManager, clientManager],
+  );
 
   const startGame = useCallback(() => {
     if (hostManager) {
@@ -131,25 +160,37 @@ export function useNetwork() {
     }
   }, [hostManager, clientManager]);
 
-  const giveClue = useCallback((word: string, count: number) => {
-    const { localPlayer } = useGameStore.getState();
-    if (!localPlayer) return;
-    if (hostManager) {
-      hostManager.dispatch({ type: 'GIVE_CLUE', payload: { playerId: localPlayer.id, word, count } });
-    } else {
-      clientManager?.sendClue(word, count);
-    }
-  }, [hostManager, clientManager]);
+  const giveClue = useCallback(
+    (word: string, count: number) => {
+      const { localPlayer } = useGameStore.getState();
+      if (!localPlayer) return;
+      if (hostManager) {
+        hostManager.dispatch({
+          type: 'GIVE_CLUE',
+          payload: { playerId: localPlayer.id, word, count },
+        });
+      } else {
+        clientManager?.sendClue(word, count);
+      }
+    },
+    [hostManager, clientManager],
+  );
 
-  const revealCard = useCallback((cardId: number) => {
-    const { localPlayer } = useGameStore.getState();
-    if (!localPlayer) return;
-    if (hostManager) {
-      hostManager.dispatch({ type: 'REVEAL_CARD', payload: { playerId: localPlayer.id, cardId } });
-    } else {
-      clientManager?.sendRevealCard(cardId);
-    }
-  }, [hostManager, clientManager]);
+  const revealCard = useCallback(
+    (cardId: number) => {
+      const { localPlayer } = useGameStore.getState();
+      if (!localPlayer) return;
+      if (hostManager) {
+        hostManager.dispatch({
+          type: 'REVEAL_CARD',
+          payload: { playerId: localPlayer.id, cardId },
+        });
+      } else {
+        clientManager?.sendRevealCard(cardId);
+      }
+    },
+    [hostManager, clientManager],
+  );
 
   const endTurn = useCallback(() => {
     const { localPlayer } = useGameStore.getState();

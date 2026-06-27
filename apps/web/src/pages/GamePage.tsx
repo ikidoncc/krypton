@@ -1,11 +1,11 @@
-import { useNetwork } from '@/hooks/useNetwork';
-import { useGameStore } from '@/store/useGameStore';
 import { BoardComponent } from '@/components/board/BoardComponent';
-import { CluePanel } from '@/components/turns/CluePanel';
 import { PlayerList } from '@/components/shared/PlayerList';
 import { RoomCode } from '@/components/shared/RoomCode';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CluePanel } from '@/components/turns/CluePanel';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNetwork } from '@/hooks/useNetwork';
+import { useGameStore } from '@/store/useGameStore';
 
 export function GamePage() {
   const { giveClue, revealCard, endTurn, leaveRoom } = useNetwork();
@@ -16,7 +16,8 @@ export function GamePage() {
   const { board, currentTeam, turnPhase, clue, guessesLeft, remainingCards } = gameState;
 
   const activeTeamLabel = currentTeam === 'red' ? 'Vermelho' : 'Azul';
-  const activeTeamColorClass = currentTeam === 'red' ? 'text-[var(--color-team-red)]' : 'text-[var(--color-team-blue)]';
+  const activeTeamColorClass =
+    currentTeam === 'red' ? 'text-[var(--color-team-red)]' : 'text-[var(--color-team-blue)]';
 
   const isMyTeamTurn = localPlayer.team === currentTeam;
   const myRoleLabel = localPlayer.role === 'spymaster' ? 'Mestre' : 'Operativo';
@@ -38,24 +39,23 @@ export function GamePage() {
           {/* Scores Tracker */}
           <div className="flex items-center gap-6 rounded-xl border border-[var(--color-krypton-border)] bg-[var(--color-krypton-bg)] px-4 py-1.5 font-bold">
             <div className="flex flex-col items-center">
-              <span className="text-xxs uppercase tracking-wider text-[var(--color-team-red)]">Vermelho</span>
+              <span className="text-xxs uppercase tracking-wider text-[var(--color-team-red)]">
+                Vermelho
+              </span>
               <span className="text-lg text-[var(--color-team-red)]">{remainingCards.red}</span>
             </div>
             <div className="text-xs text-[var(--color-krypton-muted)]">restantes</div>
             <div className="flex flex-col items-center">
-              <span className="text-xxs uppercase tracking-wider text-[var(--color-team-blue)]">Azul</span>
+              <span className="text-xxs uppercase tracking-wider text-[var(--color-team-blue)]">
+                Azul
+              </span>
               <span className="text-lg text-[var(--color-team-blue)]">{remainingCards.blue}</span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             {roomCode && <RoomCode code={roomCode} size="sm" />}
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={leaveRoom}
-              className="font-bold"
-            >
+            <Button variant="destructive" size="sm" onClick={leaveRoom} className="font-bold">
               Sair
             </Button>
           </div>
@@ -70,15 +70,22 @@ export function GamePage() {
           <div className="flex items-center justify-between rounded-2xl border border-[var(--color-krypton-border)] bg-[var(--color-krypton-surface)] p-4">
             <div className="flex items-center gap-3">
               <span className={`relative flex h-3 w-3`}>
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${currentTeam === 'red' ? 'bg-[var(--color-team-red)]' : 'bg-[var(--color-team-blue)]'}`}></span>
-                <span className={`relative inline-flex rounded-full h-3 w-3 ${currentTeam === 'red' ? 'bg-[var(--color-team-red)]' : 'bg-[var(--color-team-blue)]'}`}></span>
+                <span
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${currentTeam === 'red' ? 'bg-[var(--color-team-red)]' : 'bg-[var(--color-team-blue)]'}`}
+                ></span>
+                <span
+                  className={`relative inline-flex rounded-full h-3 w-3 ${currentTeam === 'red' ? 'bg-[var(--color-team-red)]' : 'bg-[var(--color-team-blue)]'}`}
+                ></span>
               </span>
               <p className="text-sm font-medium">
-                Turno do Time <span className={`font-black ${activeTeamColorClass}`}>{activeTeamLabel}</span>
+                Turno do Time{' '}
+                <span className={`font-black ${activeTeamColorClass}`}>{activeTeamLabel}</span>
                 {isMyTeamTurn ? (
                   <span className="ml-1 text-xs text-emerald-400 font-bold">(Seu Time)</span>
                 ) : (
-                  <span className="ml-1 text-xs text-[var(--color-krypton-muted)]">(Aguardando)</span>
+                  <span className="ml-1 text-xs text-[var(--color-krypton-muted)]">
+                    (Aguardando)
+                  </span>
                 )}
               </p>
             </div>

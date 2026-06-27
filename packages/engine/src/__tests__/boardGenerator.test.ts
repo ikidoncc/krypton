@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
 import type { Card } from '@krypton/shared';
+import { BOARD_SIZE, NEUTRAL_CARDS, OTHER_TEAM_CARDS, STARTING_TEAM_CARDS } from '@krypton/shared';
+import { describe, expect, it } from 'vitest';
 import { generateBoard, maskBoardForOperative } from '../boardGenerator.js';
-import { BOARD_SIZE, STARTING_TEAM_CARDS, OTHER_TEAM_CARDS, NEUTRAL_CARDS } from '@krypton/shared';
 
 describe('generateBoard', () => {
   it('returns exactly 25 cards', () => {
@@ -38,9 +38,9 @@ describe('generateBoard', () => {
     for (const card of board) {
       if (card.color) counts[card.color]++;
     }
-    expect(counts.red).toBe(STARTING_TEAM_CARDS);        // 9
-    expect(counts.blue).toBe(OTHER_TEAM_CARDS);          // 8
-    expect(counts.neutral).toBe(NEUTRAL_CARDS);          // 7
+    expect(counts.red).toBe(STARTING_TEAM_CARDS); // 9
+    expect(counts.blue).toBe(OTHER_TEAM_CARDS); // 8
+    expect(counts.neutral).toBe(NEUTRAL_CARDS); // 7
     expect(counts.assassin).toBe(1);
   });
 
@@ -50,9 +50,9 @@ describe('generateBoard', () => {
     for (const card of board) {
       if (card.color) counts[card.color]++;
     }
-    expect(counts.blue).toBe(STARTING_TEAM_CARDS);       // 9
-    expect(counts.red).toBe(OTHER_TEAM_CARDS);           // 8
-    expect(counts.neutral).toBe(NEUTRAL_CARDS);          // 7
+    expect(counts.blue).toBe(STARTING_TEAM_CARDS); // 9
+    expect(counts.red).toBe(OTHER_TEAM_CARDS); // 8
+    expect(counts.neutral).toBe(NEUTRAL_CARDS); // 7
     expect(counts.assassin).toBe(1);
   });
 
@@ -62,8 +62,12 @@ describe('generateBoard', () => {
   });
 
   it('produces different boards on consecutive calls (statistical)', () => {
-    const a = generateBoard('red').map((c) => c.word).join();
-    const b = generateBoard('red').map((c) => c.word).join();
+    const a = generateBoard('red')
+      .map((c) => c.word)
+      .join();
+    const b = generateBoard('red')
+      .map((c) => c.word)
+      .join();
     expect(a).not.toBe(b);
   });
 });
@@ -79,7 +83,9 @@ describe('maskBoardForOperative', () => {
   it('preserves colors of revealed cards', () => {
     const board = generateBoard('red');
     // Manually reveal first card
-    const revealed = board.map((c: Card, i: number) => (i === 0 ? { ...c, revealed: true } : c)) as typeof board;
+    const revealed = board.map((c: Card, i: number) =>
+      i === 0 ? { ...c, revealed: true } : c,
+    ) as typeof board;
     const masked = maskBoardForOperative(revealed);
     expect(masked[0]!.color).toBe(board[0]!.color);
   });

@@ -2,27 +2,23 @@
 
 // Board generation
 export { generateBoard, maskBoardForOperative } from './boardGenerator.js';
-
-// Word list
-export { pickWords, WORD_POOL } from './wordList.js';
-
+export type { EngineAction } from './gameReducer.js';
+// Reducer
+export { gameReducer } from './gameReducer.js';
 // Team management
 export {
-  selectStartingTeam,
   assignTeamsRandomly,
+  selectStartingTeam,
   validateTeamComposition,
 } from './teamGenerator.js';
-
+export type { GameOverResult } from './validators.js';
 // Validators
 export {
+  canEndTurn,
   canGiveClue,
   canRevealCard,
-  canEndTurn,
   canStartGame,
   isGameOver,
 } from './validators.js';
-export type { GameOverResult } from './validators.js';
-
-// Reducer
-export { gameReducer } from './gameReducer.js';
-export type { EngineAction } from './gameReducer.js';
+// Word list
+export { pickWords, WORD_POOL } from './wordList.js';

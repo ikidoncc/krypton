@@ -19,15 +19,10 @@ export function BoardComponent({
   const isSpymaster = localPlayer.role === 'spymaster';
   const isCurrentTeam = localPlayer.team === currentTeam;
   const isOperativeCanGuess =
-    isCurrentTeam &&
-    localPlayer.role === 'operative' &&
-    turnPhase === 'guessing';
+    isCurrentTeam && localPlayer.role === 'operative' && turnPhase === 'guessing';
 
   return (
-    <div
-      className="grid gap-2 sm:gap-3 w-full"
-      style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}
-    >
+    <div className="grid gap-2 sm:gap-3 w-full" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
       {board.map((card) => (
         <CardComponent
           key={card.id}

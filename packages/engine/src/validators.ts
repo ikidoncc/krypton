@@ -3,7 +3,7 @@
 // is currently legal given the game state and the acting player.
 // ─────────────────────────────────────────────────────────────
 
-import type { GameState, Player, Card } from '@krypton/shared';
+import type { Card, GameState, Player } from '@krypton/shared';
 
 // ── canGiveClue ───────────────────────────────────────────────
 
@@ -35,11 +35,7 @@ export function canGiveClue(state: GameState, player: Player): boolean {
  * - The card must exist and not yet be revealed
  * - There must be guesses remaining
  */
-export function canRevealCard(
-  state: GameState,
-  player: Player,
-  cardId: number,
-): boolean {
+export function canRevealCard(state: GameState, player: Player, cardId: number): boolean {
   if (state.phase !== 'playing') return false;
   if (state.turnPhase !== 'guessing') return false;
   if (player.team !== state.currentTeam) return false;
@@ -86,9 +82,7 @@ export function canStartGame(state: GameState, player: Player): boolean {
   if (state.phase !== 'lobby' && state.phase !== 'teams') return false;
   if (!player.isHost) return false;
 
-  const activePlayers = state.players.filter(
-    (p: Player) => p.team === 'red' || p.team === 'blue',
-  );
+  const activePlayers = state.players.filter((p: Player) => p.team === 'red' || p.team === 'blue');
 
   for (const team of ['red', 'blue'] as const) {
     const teamPlayers = activePlayers.filter((p: Player) => p.team === team);

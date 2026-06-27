@@ -3,7 +3,7 @@
 // Wraps the PeerJS Peer constructor with a Promise-based API.
 // ─────────────────────────────────────────────────────────────
 
-import type { Peer as PeerType, PeerOptions } from 'peerjs';
+import type { PeerOptions, Peer as PeerType } from 'peerjs';
 import { Peer } from 'peerjs';
 import { log } from './utils.js';
 
@@ -24,9 +24,7 @@ const PEERJS_CLOUD_CONFIG: PeerOptions = {
  */
 export function createPeer(id?: string): Promise<PeerType> {
   return new Promise((resolve, reject) => {
-    const peer = id
-      ? new Peer(id, PEERJS_CLOUD_CONFIG)
-      : new Peer(PEERJS_CLOUD_CONFIG);
+    const peer = id ? new Peer(id, PEERJS_CLOUD_CONFIG) : new Peer(PEERJS_CLOUD_CONFIG);
 
     const timeout = window.setTimeout(() => {
       peer.destroy();

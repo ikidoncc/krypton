@@ -11,7 +11,8 @@ const COLOR_CLASSES: Record<CardColorValue, string> = {
   red: 'bg-[var(--color-team-red)] text-white shadow-[0_0_20px_var(--color-team-red-glow)]',
   blue: 'bg-[var(--color-team-blue)] text-white shadow-[0_0_20px_var(--color-team-blue-glow)]',
   neutral: 'bg-[var(--color-card-neutral)] text-[var(--color-krypton-muted)]',
-  assassin: 'bg-[var(--color-card-assassin)] text-red-400 border-[var(--color-card-assassin-border)] shadow-[0_0_20px_rgba(139,0,0,0.4)]',
+  assassin:
+    'bg-[var(--color-card-assassin)] text-red-400 border-[var(--color-card-assassin-border)] shadow-[0_0_20px_rgba(139,0,0,0.4)]',
 };
 
 const SPYMASTER_BORDER: Record<CardColorValue, string> = {
@@ -49,7 +50,9 @@ export function CardComponent({
         `}
       >
         {/* Front face — unrevealed */}
-        <div
+        <button
+          type="button"
+          disabled={!canClick}
           onClick={canClick ? () => onClick?.(card.id) : undefined}
           className={`
             absolute inset-0 flex items-center justify-center
@@ -57,29 +60,35 @@ export function CardComponent({
             transition-all duration-200
             ${isSpymaster && color ? spymasterBg[color] : 'bg-[var(--color-krypton-surface)]'}
             ${isSpymaster && color ? SPYMASTER_BORDER[color] : 'border-[var(--color-krypton-border)]'}
-            ${canClick
-              ? 'cursor-pointer hover:scale-[1.03] hover:brightness-110 active:scale-[0.97]'
-              : 'cursor-default'}
+            ${
+              canClick
+                ? 'cursor-pointer hover:scale-[1.03] hover:brightness-110 active:scale-[0.97]'
+                : 'cursor-default'
+            }
           `}
         >
-          <span className="
+          <span
+            className="
             text-center font-bold text-xs sm:text-sm leading-tight px-2
             text-[var(--color-krypton-text)] uppercase tracking-wide
-          ">
+          "
+          >
             {card.word}
           </span>
 
           {/* Spymaster color dot */}
           {isSpymaster && color && (
-            <span className={`
+            <span
+              className={`
               absolute top-1.5 right-1.5 w-2 h-2 rounded-full
               ${color === 'red' ? 'bg-[var(--color-team-red)]' : ''}
               ${color === 'blue' ? 'bg-[var(--color-team-blue)]' : ''}
               ${color === 'neutral' ? 'bg-[var(--color-krypton-muted)]' : ''}
               ${color === 'assassin' ? 'bg-red-700' : ''}
-            `} />
+            `}
+            />
           )}
-        </div>
+        </button>
 
         {/* Back face — revealed */}
         <div

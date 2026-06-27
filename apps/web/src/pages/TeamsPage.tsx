@@ -1,10 +1,10 @@
-import { useNetwork } from '@/hooks/useNetwork';
-import { useGameStore } from '@/store/useGameStore';
+import { assignTeamsRandomly, validateTeamComposition } from '@krypton/engine';
 import { PlayerList } from '@/components/shared/PlayerList';
 import { RoomCode } from '@/components/shared/RoomCode';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { validateTeamComposition, assignTeamsRandomly } from '@krypton/engine';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNetwork } from '@/hooks/useNetwork';
+import { useGameStore } from '@/store/useGameStore';
 import { usePeerStore } from '@/store/usePeerStore';
 
 export function TeamsPage() {
@@ -57,11 +57,12 @@ export function TeamsPage() {
               <CardContent className="space-y-6">
                 {/* Team Buttons */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-widest text-[var(--color-krypton-muted)]">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-krypton-muted)] block">
                     Escolher Equipe
-                  </label>
+                  </span>
                   <div className="grid grid-cols-3 gap-3">
                     <button
+                      type="button"
                       onClick={() => handleSelectTeam('red')}
                       className={`rounded-xl border py-4 text-center font-bold transition-all ${
                         localPlayer.team === 'red'
@@ -72,6 +73,7 @@ export function TeamsPage() {
                       Time Vermelho
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleSelectTeam('blue')}
                       className={`rounded-xl border py-4 text-center font-bold transition-all ${
                         localPlayer.team === 'blue'
@@ -82,6 +84,7 @@ export function TeamsPage() {
                       Time Azul
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleSelectTeam('spectator')}
                       className={`rounded-xl border py-4 text-center font-bold transition-all ${
                         localPlayer.team === 'spectator'
@@ -97,11 +100,12 @@ export function TeamsPage() {
                 {/* Role Buttons (disabled for spectators) */}
                 {localPlayer.team !== 'spectator' && (
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-widest text-[var(--color-krypton-muted)]">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-krypton-muted)] block">
                       Escolher Papel
-                    </label>
+                    </span>
                     <div className="grid grid-cols-2 gap-3">
                       <button
+                        type="button"
                         onClick={() => handleSelectRole('spymaster')}
                         className={`rounded-xl border py-4 text-center font-bold transition-all ${
                           localPlayer.role === 'spymaster'
@@ -110,9 +114,12 @@ export function TeamsPage() {
                         }`}
                       >
                         Mestre (Spymaster)
-                        <span className="block text-xxs font-normal opacity-70">Vê todas as cores</span>
+                        <span className="block text-xxs font-normal opacity-70">
+                          Vê todas as cores
+                        </span>
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleSelectRole('operative')}
                         className={`rounded-xl border py-4 text-center font-bold transition-all ${
                           localPlayer.role === 'operative'
@@ -121,7 +128,9 @@ export function TeamsPage() {
                         }`}
                       >
                         Operativo (Operative)
-                        <span className="block text-xxs font-normal opacity-70">Adivinha as palavras</span>
+                        <span className="block text-xxs font-normal opacity-70">
+                          Adivinha as palavras
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -156,8 +165,8 @@ export function TeamsPage() {
                       Requisitos Pendentes:
                     </p>
                     <ul className="list-disc pl-4 text-xs text-[var(--color-krypton-muted)] space-y-1">
-                      {validationIssues.map((issue, idx) => (
-                        <li key={idx}>{issue}</li>
+                      {validationIssues.map((issue) => (
+                        <li key={issue}>{issue}</li>
                       ))}
                     </ul>
                   </div>
@@ -178,13 +187,13 @@ export function TeamsPage() {
                           shuffledPlayers.forEach((p) => {
                             hostManager.dispatch({
                               type: 'UPDATE_PLAYER',
-                              payload: { id: p.id, team: p.team, role: p.role }
+                              payload: { id: p.id, team: p.team, role: p.role },
                             });
                           });
                         }
                       }}
-                      variant="outline"
-                      className="w-full border-[var(--color-krypton-border)] text-[var(--color-krypton-text)] hover:bg-[var(--color-krypton-surface)]"
+                      variant="ghost"
+                      className="w-full"
                     >
                       Aleatorizar Equipes
                     </Button>
@@ -205,11 +214,7 @@ export function TeamsPage() {
               </CardContent>
             </Card>
 
-            <Button
-              variant="destructive"
-              onClick={leaveRoom}
-              className="w-full py-6 font-bold"
-            >
+            <Button variant="destructive" onClick={leaveRoom} className="w-full py-6 font-bold">
               Sair da Sala
             </Button>
           </div>

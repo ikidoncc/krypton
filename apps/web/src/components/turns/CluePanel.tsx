@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import type { Clue, Player } from '@krypton/shared';
 import { Send } from 'lucide-react';
+import { useState } from 'react';
 
 interface CluePanelProps {
   localPlayer: Player;
@@ -63,7 +63,10 @@ export function CluePanel({
         "
       >
         <div className="flex-1">
-          <label className={`text-xs uppercase tracking-widest mb-1 block ${TEAM_COLOR[currentTeam]}`}>
+          <label
+            htmlFor="clue-word-input"
+            className={`text-xs uppercase tracking-widest mb-1 block ${TEAM_COLOR[currentTeam]}`}
+          >
             Sua pista (Mestre)
           </label>
           <input
@@ -73,7 +76,6 @@ export function CluePanel({
             onChange={(e) => setClueWord(e.target.value)}
             placeholder="Uma palavra..."
             maxLength={30}
-            autoFocus
             className={`
               w-full bg-transparent border-b-2 outline-none py-1 text-lg font-bold
               text-[var(--color-krypton-text)] placeholder:text-[var(--color-krypton-muted)]
@@ -83,13 +85,15 @@ export function CluePanel({
         </div>
 
         <div className="flex flex-col items-center">
-          <label className="text-xs text-[var(--color-krypton-muted)] mb-1">Qtd</label>
+          <span className="text-xs text-[var(--color-krypton-muted)] mb-1">Qtd</span>
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setClueCount((n) => Math.max(0, n - 1))}
               className="w-7 h-7 rounded-lg bg-[var(--color-krypton-border)] hover:bg-[var(--color-krypton-muted)]/30 text-[var(--color-krypton-text)] font-bold text-sm transition-colors"
-            >−</button>
+            >
+              −
+            </button>
             <span className="w-8 text-center font-bold text-[var(--color-krypton-text)]">
               {clueCount === 0 ? '∞' : clueCount}
             </span>
@@ -97,7 +101,9 @@ export function CluePanel({
               type="button"
               onClick={() => setClueCount((n) => Math.min(9, n + 1))}
               className="w-7 h-7 rounded-lg bg-[var(--color-krypton-border)] hover:bg-[var(--color-krypton-muted)]/30 text-[var(--color-krypton-text)] font-bold text-sm transition-colors"
-            >+</button>
+            >
+              +
+            </button>
           </div>
         </div>
 
@@ -124,10 +130,12 @@ export function CluePanel({
     const guessDisplay = guessesLeft === Infinity ? '∞' : guessesLeft;
 
     return (
-      <div className="
+      <div
+        className="
         flex items-center justify-between gap-4 p-4 rounded-2xl
         bg-[var(--color-krypton-surface)] border border-[var(--color-krypton-border)]
-      ">
+      "
+      >
         <div>
           <p className={`text-xs uppercase tracking-widest mb-1 ${TEAM_COLOR[currentTeam]}`}>
             Pista ativa
@@ -149,6 +157,7 @@ export function CluePanel({
           {isOperative && isMyTurn && turnPhase === 'guessing' && (
             <button
               id="end-turn-btn"
+              type="button"
               onClick={onEndTurn}
               className="
                 px-4 py-2 rounded-xl text-sm font-semibold
@@ -168,12 +177,16 @@ export function CluePanel({
   // ── Waiting for spymaster ────────────────────────────────
 
   return (
-    <div className="
+    <div
+      className="
       flex items-center justify-center p-4 rounded-2xl
       bg-[var(--color-krypton-surface)] border border-[var(--color-krypton-border)]
-    ">
+    "
+    >
       <div className="flex items-center gap-3">
-        <div className={`w-2 h-2 rounded-full animate-pulse ${currentTeam === 'red' ? 'bg-[var(--color-team-red)]' : 'bg-[var(--color-team-blue)]'}`} />
+        <div
+          className={`w-2 h-2 rounded-full animate-pulse ${currentTeam === 'red' ? 'bg-[var(--color-team-red)]' : 'bg-[var(--color-team-blue)]'}`}
+        />
         <p className="text-sm text-[var(--color-krypton-muted)]">
           Aguardando pista do Mestre {currentTeam === 'red' ? 'Vermelho' : 'Azul'}…
         </p>

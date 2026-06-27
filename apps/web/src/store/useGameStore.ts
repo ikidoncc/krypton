@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import type { GameState, Player } from '@krypton/shared';
+import { create } from 'zustand';
 
 interface GameStore {
   /** The authoritative game state received from the host. */

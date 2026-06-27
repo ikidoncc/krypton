@@ -2,8 +2,8 @@
 // Game state types
 // ─────────────────────────────────────────────────────────────
 
-import type { Player, Team } from './player.js';
 import type { Board } from './board.js';
+import type { Player, Team } from './player.js';
 
 // ── Game lifecycle ────────────────────────────────────────────
 

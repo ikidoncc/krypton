@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import type { GameState, Player, Board, Card } from '@krypton/shared';
+import type { Board, Card, GameState, Player } from '@krypton/shared';
 import { createInitialGameState } from '@krypton/shared';
-import { canGiveClue, canRevealCard, canEndTurn, canStartGame, isGameOver } from '../validators.js';
+import { describe, expect, it } from 'vitest';
 import { generateBoard } from '../boardGenerator.js';
+import { canEndTurn, canGiveClue, canRevealCard, canStartGame, isGameOver } from '../validators.js';
 
 // ── Test fixtures ─────────────────────────────────────────────
 
@@ -95,7 +95,9 @@ describe('canRevealCard', () => {
 
   it('rejects when card is already revealed', () => {
     const board = generateBoard('red');
-    const revealedBoard = board.map((c: Card, i: number) => (i === 0 ? { ...c, revealed: true } : c)) as Board;
+    const revealedBoard = board.map((c: Card, i: number) =>
+      i === 0 ? { ...c, revealed: true } : c,
+    ) as Board;
     const state = makePlayingState({ turnPhase: 'guessing', guessesLeft: 2, board: revealedBoard });
     const player = makePlayer({ team: 'red', role: 'operative' });
     expect(canRevealCard(state, player, 0)).toBe(false);

@@ -19,19 +19,14 @@
 //   PLAYER_LEFT    → (auto on disconnect) remove player, broadcast
 // ─────────────────────────────────────────────────────────────
 
-import type { DataConnection } from 'peerjs';
-import type {
-  GameState,
-  Player,
-  Message,
-  SyncStateMessage,
-} from '@krypton/shared';
-import { createInitialGameState } from '@krypton/shared';
-import type { Peer } from './peer.js';
 import type { EngineAction } from '@krypton/engine';
-import { gameReducer, maskBoardForOperative, canStartGame } from '@krypton/engine';
+import { canStartGame, gameReducer, maskBoardForOperative } from '@krypton/engine';
+import type { GameState, Message, Player, SyncStateMessage } from '@krypton/shared';
+import { createInitialGameState } from '@krypton/shared';
+import type { DataConnection } from 'peerjs';
 import { EventEmitter } from './eventEmitter.js';
-import { parseMessage, serializeGameState, log, peerIdToRoomCode } from './utils.js';
+import type { Peer } from './peer.js';
+import { log, parseMessage, peerIdToRoomCode, serializeGameState } from './utils.js';
 
 // ── HostManager Events ────────────────────────────────────────
 
@@ -54,10 +49,7 @@ export class HostManager extends EventEmitter<HostManagerEvents> {
   private readonly hostPlayer: Player;
   private readonly peer: Peer;
 
-  constructor(
-    peer: Peer,
-    hostName: string,
-  ) {
+  constructor(peer: Peer, hostName: string) {
     super();
     this.peer = peer;
 

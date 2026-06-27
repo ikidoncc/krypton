@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
+import { useState } from 'react';
 
 interface RoomCodeProps {
   code: string;
@@ -27,7 +27,7 @@ export function RoomCode({ code, size = 'lg' }: RoomCodeProps) {
         <div className="flex gap-1">
           {letters.map((char, i) => (
             <span
-              key={i}
+              key={`${char}-${i}`}
               className={`
                 inline-flex items-center justify-center rounded-md font-mono font-bold
                 bg-[var(--color-krypton-surface)] border border-[var(--color-krypton-border)]
@@ -41,6 +41,7 @@ export function RoomCode({ code, size = 'lg' }: RoomCodeProps) {
         </div>
 
         <button
+          type="button"
           onClick={handleCopy}
           title="Copiar código"
           className="
@@ -49,11 +50,7 @@ export function RoomCode({ code, size = 'lg' }: RoomCodeProps) {
             hover:bg-[var(--color-krypton-surface)]
           "
         >
-          {copied ? (
-            <Check size={16} className="text-emerald-400" />
-          ) : (
-            <Copy size={16} />
-          )}
+          {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
         </button>
       </div>
     </div>

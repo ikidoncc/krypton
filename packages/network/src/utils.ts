@@ -2,9 +2,8 @@
 // Network utilities
 // ─────────────────────────────────────────────────────────────
 
-import type { GameState } from '@krypton/shared';
+import type { GameState, Message } from '@krypton/shared';
 import { isMessage } from '@krypton/shared';
-import type { Message } from '@krypton/shared';
 
 // ── Room code ─────────────────────────────────────────────────
 
@@ -84,10 +83,7 @@ export function parseMessage(data: unknown): Message | null {
 const LOG_PREFIX = '[krypton/network]';
 
 export const log = {
-  info: (msg: string, ...args: unknown[]) =>
-    console.info(`${LOG_PREFIX} ${msg}`, ...args),
-  warn: (msg: string, ...args: unknown[]) =>
-    console.warn(`${LOG_PREFIX} ${msg}`, ...args),
-  error: (msg: string, ...args: unknown[]) =>
-    console.error(`${LOG_PREFIX} ${msg}`, ...args),
+  info: (msg: string, ...args: unknown[]) => console.info(`${LOG_PREFIX} ${msg}`, ...args),
+  warn: (msg: string, ...args: unknown[]) => console.warn(`${LOG_PREFIX} ${msg}`, ...args),
+  error: (msg: string, ...args: unknown[]) => console.error(`${LOG_PREFIX} ${msg}`, ...args),
 };

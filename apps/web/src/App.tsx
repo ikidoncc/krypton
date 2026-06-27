@@ -1,8 +1,8 @@
-import { useGameStore } from '@/store/useGameStore';
+import { GameOverPage } from '@/pages/GameOverPage';
+import { GamePage } from '@/pages/GamePage';
 import { LobbyPage } from '@/pages/LobbyPage';
 import { TeamsPage } from '@/pages/TeamsPage';
-import { GamePage } from '@/pages/GamePage';
-import { GameOverPage } from '@/pages/GameOverPage';
+import { useGameStore } from '@/store/useGameStore';
 
 export default function App() {
   const { gameState } = useGameStore();

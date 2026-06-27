@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import type { GameState, Player, Board, Card } from '@krypton/shared';
+import type { Board, Card, GameState, Player } from '@krypton/shared';
 import { createInitialGameState } from '@krypton/shared';
-import { gameReducer } from '../gameReducer.js';
+import { describe, expect, it } from 'vitest';
 import { generateBoard } from '../boardGenerator.js';
+import { gameReducer } from '../gameReducer.js';
 
 // ── Fixtures ──────────────────────────────────────────────────
 
@@ -261,7 +261,9 @@ describe('REVEAL_CARD', () => {
       guessesLeft: 5,
       remainingCards: { red: 1, blue: 8 },
     };
-    const lastRedIdx = stateWithOneLeft.board.findIndex((c: Card) => c.color === 'red' && !c.revealed);
+    const lastRedIdx = stateWithOneLeft.board.findIndex(
+      (c: Card) => c.color === 'red' && !c.revealed,
+    );
     const next = gameReducer(stateWithOneLeft, {
       type: 'REVEAL_CARD',
       payload: { playerId: operative.id, cardId: lastRedIdx },

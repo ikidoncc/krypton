@@ -2,7 +2,7 @@
 // Team generator — assigns players to teams and roles
 // ─────────────────────────────────────────────────────────────
 
-import type { Player, Team, Role } from '@krypton/shared';
+import type { Player, Role, Team } from '@krypton/shared';
 
 /**
  * Randomly picks the starting team.

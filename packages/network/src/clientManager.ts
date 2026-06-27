@@ -8,11 +8,11 @@
 //   - The client only renders whatever SYNC_STATE it receives.
 // ─────────────────────────────────────────────────────────────
 
+import type { GameState, Message, Role, Team } from '@krypton/shared';
 import type { DataConnection } from 'peerjs';
-import type { GameState, Team, Role, Message } from '@krypton/shared';
-import type { Peer } from './peer.js';
 import { EventEmitter } from './eventEmitter.js';
-import { parseMessage, deserializeGameState, log } from './utils.js';
+import type { Peer } from './peer.js';
+import { deserializeGameState, log, parseMessage } from './utils.js';
 
 // ── ClientManager Events ──────────────────────────────────────
 
@@ -24,7 +24,7 @@ type ClientManagerEvents = {
   /** Fired when a player leaves. */
   playerLeft: { id: string };
   /** Fired when the connection to the host is lost. */
-  disconnected: void;
+  disconnected: undefined;
   /** Fired on error. */
   error: Error;
 };
@@ -37,11 +37,7 @@ export class ClientManager extends EventEmitter<ClientManagerEvents> {
   private readonly hostConn: DataConnection;
   private readonly localPlayerId: string;
 
-  constructor(
-    peer: Peer,
-    hostConn: DataConnection,
-    localPlayerId: string,
-  ) {
+  constructor(peer: Peer, hostConn: DataConnection, localPlayerId: string) {
     super();
     this.peer = peer;
     this.hostConn = hostConn;

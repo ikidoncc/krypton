@@ -1,8 +1,8 @@
+import { BoardComponent } from '@/components/board/BoardComponent';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNetwork } from '@/hooks/useNetwork';
 import { useGameStore } from '@/store/useGameStore';
-import { BoardComponent } from '@/components/board/BoardComponent';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { usePeerStore } from '@/store/usePeerStore';
 
 export function GameOverPage() {
@@ -14,7 +14,8 @@ export function GameOverPage() {
   const { winner, endReason, board } = gameState;
 
   const winnerLabel = winner === 'red' ? 'Time Vermelho' : 'Time Azul';
-  const winnerColorClass = winner === 'red' ? 'text-[var(--color-team-red)]' : 'text-[var(--color-team-blue)]';
+  const winnerColorClass =
+    winner === 'red' ? 'text-[var(--color-team-red)]' : 'text-[var(--color-team-blue)]';
 
   const handlePlayAgain = () => {
     // Only the host can restart the game back to teams phase
@@ -63,11 +64,7 @@ export function GameOverPage() {
                 Aguardando o host iniciar uma nova partida...
               </p>
             )}
-            <Button
-              variant="destructive"
-              onClick={leaveRoom}
-              className="font-bold px-6 py-5"
-            >
+            <Button variant="destructive" onClick={leaveRoom} className="font-bold px-6 py-5">
               Sair da Sala
             </Button>
           </CardContent>

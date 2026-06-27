@@ -8,10 +8,16 @@
     "build": "pnpm --filter @krypton/web build",
     "test": "pnpm --filter @krypton/engine test",
     "typecheck": "pnpm --filter @krypton/shared exec tsc --build && pnpm --filter @krypton/engine exec tsc --noEmit && pnpm --filter @krypton/network exec tsc --noEmit && pnpm --filter @krypton/web exec tsc --noEmit",
-    "clean": "pnpm -r exec rm -rf dist node_modules"
+    "clean": "pnpm -r exec rm -rf dist node_modules",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write ."
   },
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.1"
   }
 }

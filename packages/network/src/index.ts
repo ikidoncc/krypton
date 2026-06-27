@@ -15,27 +15,23 @@
 //   client.on('stateUpdated', (state) => renderGame(state));
 //   client.sendRevealCard(cardId);
 
-// ── Room management ───────────────────────────────────────────
-export { createRoom, joinRoom } from './roomManager.js';
-export type { CreatedRoom, JoinedRoom } from './roomManager.js';
-
-// ── Host ──────────────────────────────────────────────────────
-export { HostManager } from './hostManager.js';
-
 // ── Client ────────────────────────────────────────────────────
 export { ClientManager } from './clientManager.js';
-
-// ── Utilities ─────────────────────────────────────────────────
-export {
-  generateRoomCode,
-  roomCodeToPeerId,
-  peerIdToRoomCode,
-  serializeGameState,
-  deserializeGameState,
-  parseMessage,
-  serializeMessage,
-} from './utils.js';
-
+export type { EventHandler, EventMap } from './eventEmitter.js';
 // ── Event emitter ─────────────────────────────────────────────
 export { EventEmitter } from './eventEmitter.js';
-export type { EventMap, EventHandler } from './eventEmitter.js';
+// ── Host ──────────────────────────────────────────────────────
+export { HostManager } from './hostManager.js';
+export type { CreatedRoom, JoinedRoom } from './roomManager.js';
+// ── Room management ───────────────────────────────────────────
+export { createRoom, joinRoom } from './roomManager.js';
+// ── Utilities ─────────────────────────────────────────────────
+export {
+  deserializeGameState,
+  generateRoomCode,
+  parseMessage,
+  peerIdToRoomCode,
+  roomCodeToPeerId,
+  serializeGameState,
+  serializeMessage,
+} from './utils.js';

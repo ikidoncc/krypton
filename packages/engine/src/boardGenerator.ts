@@ -4,11 +4,11 @@
 
 import type { Board, Card, CardColorValue } from '@krypton/shared';
 import {
-  BOARD_SIZE,
-  STARTING_TEAM_CARDS,
-  OTHER_TEAM_CARDS,
-  NEUTRAL_CARDS,
   ASSASSIN_CARDS,
+  BOARD_SIZE,
+  NEUTRAL_CARDS,
+  OTHER_TEAM_CARDS,
+  STARTING_TEAM_CARDS,
 } from '@krypton/shared';
 import { pickWords } from './wordList.js';
 
@@ -62,12 +62,14 @@ export function generateBoard(startingTeam: 'red' | 'blue'): Board {
   const words = pickWords(BOARD_SIZE);
 
   // Build the board
-  const board: Card[] = words.map((word, id): Card => ({
-    id,
-    word,
-    color: colors[id] ?? 'neutral',
-    revealed: false,
-  }));
+  const board: Card[] = words.map(
+    (word, id): Card => ({
+      id,
+      word,
+      color: colors[id] ?? 'neutral',
+      revealed: false,
+    }),
+  );
 
   return board as unknown as Board;
 }
